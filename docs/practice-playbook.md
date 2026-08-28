@@ -479,12 +479,21 @@ Q2、Q7、Q8、Q14 出声讲。录下来听有没有具体例子。没有呼气�
 | 周末名词速通 | `frontend-architecture-map.md` |
 | 文件夹 / 数据流 / 提示词 / 岗位评估 / 面试 | 本文 §1、§3–§10 |
 | 喂给 OpenClaw 的完整提示词 | `docs/openclaw-prompt.md` |
+| 2026-08-28 办公室 → 回家交接 | `docs/README.md` 状态表；代码未动，练习未做 |
 
 从今晚起，实践记录建议直接补在本文末尾「实践日志」，不要再散落聊天。
 
 ---
 
 ## 12. 实践日志（你来写）
+
+### 2026-08-28 交接（办公室 → 回家）
+
+- 文档包已在 `master`：playbook / 名词地图 / Agent.md / OpenClaw 提示词 / 根 README
+- 站点代码未改；第 1 遍重构未立项
+- 练习 1～3 未做。回家从练习 1 开始，先贴 `docs/openclaw-prompt.md`
+- 本轮只确认 `git pull origin master` 已与远程一致，并补交接入口
+- `main` 是另一棵旧树，不要在上面继续
 
 ### YYYY-MM-DD
 

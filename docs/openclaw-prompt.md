@@ -21,9 +21,9 @@
 1. `docs/practice-playbook.md` — 主手册（缺陷、目录、数据流、提示词模板、岗位评估、面试题、练习）
 2. `docs/frontend-architecture-map.md` — 名词地图
 3. `Agent.md` — 现有站点怎么跑
-4. `docs/README.md` — 阅读顺序
+4. `docs/README.md` — **交接入口。** 先看「交接到哪了」，再按阅读顺序走
 
-不要无视这些文档另起一套课程。细节以 playbook 为准。
+不要无视这些文档另起一套课程。细节以 playbook 为准。站点代码还没开始第 1 遍重构；练习 1～3 还没做。
 
 ## 不可动摇的学习约束
 
