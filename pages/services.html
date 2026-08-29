@@ -1,75 +1,56 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>呼气之窝 - 服务</title>
     <link rel="stylesheet" href="../css/style.css">
-    <style>
-        footer {
-            text-align: center;
-            /* 居中对齐 */
-            padding: 10px 0;
-            /* 内边距 */
-            background-color: #f5f5f5;
-            /* 背景色 */
-            border-top: 1px solid #ddd;
-            /* 顶部边框 */
-            color: #666;
-            /* 字体颜色 */
-            font-size: 14px;
-            /* 字体大小 */
-            margin-top: 20px;
-            /* 与上方内容的间距 */
-        }
-    </style>
 </head>
 
 <body>
     <header class="header">
         <div class="logo">
-            <img src="../image/logo.jpg" alt="网站Logo">
+            <img src="../image/logo.jpg" alt="">
             <span>呼气之窝</span>
         </div>
-        <nav class="navigation">
+        <nav class="navigation" aria-label="主导航">
             <ul>
-                <li><a href="../demo.html">首页</a></li>
+                <li><a href="../index.html">首页</a></li>
                 <li><a href="about.html">关于我们</a></li>
-                <li><a href="services.html">服务</a></li>
+                <li><a href="services.html" aria-current="page">服务</a></li>
                 <li><a href="contact.html">加入我们</a></li>
             </ul>
         </nav>
     </header>
 
-    <div class="content">
-        <div class="box">
-            <h2>我们能做的</h2>
+    <main class="content services-page" aria-labelledby="page-title">
+        <h1 class="visually-hidden" id="page-title">服务</h1>
+        <section class="box services-content" aria-labelledby="services-title">
+            <h2 id="services-title">我们能做的</h2>
             <p class="strikethrough">友情提示: 鼠标悬浮于logo处有惊喜</p>
             <div class="services-list">
-                <div class="service-item">
-                    <h3>服务一</h3>
+                <section class="service-item" aria-labelledby="service-one-title">
+                    <h3 id="service-one-title">服务一</h3>
                     <p>针对我们的企业文化 我们为您提供了一个小型数据库.</p>
-                    <p>您可以通过<a href="one_services.html" class="highlight">此链接</a>访问我们的数据库,以便进行查询.</p>
-                </div>
-                <div class="service-item">
-                    <h3>服务二</h3>
+                    <p>您可以通过<a href="image-index.html" class="highlight">此链接</a>访问我们的数据库,以便进行查询.</p>
+                </section>
+                <section class="service-item" aria-labelledby="service-two-title">
+                    <h3 id="service-two-title">服务二</h3>
                     <p>还没写</p>
-                </div>
-                <div class="service-item">
-                    <h3>服务三</h3>
+                </section>
+                <section class="service-item" aria-labelledby="service-three-title">
+                    <h3 id="service-three-title">服务三</h3>
                     <p>现在是凌晨1点48分,电脑要没电了</p>
-                </div>
+                </section>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <div class="content">
-        <div class="box">
+        <aside class="box construction-notice" aria-label="施工状态">
             <p>施工尚未完成,请耐待.</p>
             <p>此处为三级网页所在处,有待加工补充.</p>
-        </div>
-    </div>
+        </aside>
+    </main>
 
     <footer>
         <p>&copy; 2024 呼气之窝. 保留所有权利.</p>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
@@ -11,12 +11,12 @@
 <body>
     <header class="header">
         <div class="logo">
-            <img src="image/logo.jpg" alt="网站Logo">
+            <img src="image/logo.jpg" alt="">
             <span>呼气之窝</span>
         </div>
-        <nav class="navigation">
+        <nav class="navigation" aria-label="主导航">
             <ul>
-                <li><a href="demo.html">首页</a></li>
+                <li><a href="index.html" aria-current="page">首页</a></li>
                 <li><a href="pages/about.html">关于我们</a></li>
                 <li><a href="pages/services.html">服务</a></li>
                 <li><a href="pages/contact.html">加入我们</a></li>
@@ -24,7 +24,8 @@
         </nav>
     </header>
 
-    <div class="content">
+    <main class="content" aria-labelledby="page-title">
+        <h1 class="visually-hidden" id="page-title">呼气之窝首页</h1>
         <div class="poem">
             <h2>短诗一首🥺🥺</h2>
             <p>天商苦呼气久矣😠</p>
@@ -41,14 +42,14 @@
             <p>呼气统治结束啦🤗🤗🤗</p>
         </div>
         <div class="image-gallery">
-            <img src="image/事迹1.jpg" alt="事迹1" class="normal-image">
-            <img src="image/事迹2.jpg" alt="事迹2" class="normal-image">
+            <img src="image/事迹1.jpg" alt="呼气相关事迹图片 1" class="normal-image">
+            <img src="image/事迹2.jpg" alt="呼气相关事迹图片 2" class="normal-image">
         </div>
-    </div>
+    </main>
     <footer>
         <p>&copy; 2024 呼气之窝. 保留所有权利.</p>
         <p>版权所有,未经许可不得转载.</p>
-        <p style="text-decoration: line-through;">收买h7不在版权考虑范围之内</p>
+        <p class="strikethrough">收买h7不在版权考虑范围之内</p>
     </footer>
     <script src="js/script.js"></script>
 </body>

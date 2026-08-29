@@ -1,43 +1,141 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Quality gate and deployments
 
 on:
-  # Runs on pushes targeting the default branch
+  pull_request:
+    branches: ["main"]
   push:
     branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
+  quality:
+    name: Validate static site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Verify generated image index
+        run: |
+          python scripts/generate-image-index.py
+          git diff --exit-code -- pages/json/image_index.json
+
+      - name: Check site contracts
+        run: python scripts/check-site.py
+
+      - name: Check repository whitespace
+        run: |
+          empty_tree="$(git hash-object -t tree /dev/null)"
+          git -c core.whitespace=cr-at-eol diff --check "$empty_tree" HEAD
+
+  deploy-server:
+    name: Deploy to Alibaba Cloud
+    if: github.event_name != 'pull_request' && vars.DEPLOY_ENABLED == 'true'
+    needs: quality
+    permissions:
+      contents: read
+    concurrency:
+      group: "tjcu8-production"
+      cancel-in-progress: false
+    environment:
+      name: production
+      url: ${{ vars.SITE_URL }}
+    runs-on: ubuntu-latest
+    env:
+      SERVER_HOST: ${{ secrets.SERVER_HOST }}
+      SERVER_PORT: ${{ secrets.SERVER_PORT }}
+      SERVER_USER: ${{ secrets.SERVER_USER }}
+      SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+      SERVER_KNOWN_HOSTS: ${{ secrets.SERVER_KNOWN_HOSTS }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+      SITE_URL: ${{ vars.SITE_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Package release
+        shell: bash
+        run: |
+          release_id="${GITHUB_SHA::12}-${GITHUB_RUN_ATTEMPT}"
+          archive="tjcu8-${release_id}.tar.gz"
+          tar -czf "$archive" index.html css js pages image
+          sha256sum "$archive" | awk '{print $1}' > "$archive.sha256"
+          echo "RELEASE_ID=$release_id" >> "$GITHUB_ENV"
+          echo "ARCHIVE=$archive" >> "$GITHUB_ENV"
+
+      - name: Configure SSH
+        shell: bash
+        run: |
+          install -m 0700 -d ~/.ssh
+          printf '%s\n' "$SERVER_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 0600 ~/.ssh/id_ed25519
+          printf '%s\n' "$SERVER_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 0644 ~/.ssh/known_hosts
+
+      - name: Upload and activate release
+        shell: bash
+        run: |
+          scp -P "$SERVER_PORT" -i ~/.ssh/id_ed25519 \
+            "$ARCHIVE" "$ARCHIVE.sha256" \
+            "${SERVER_USER}@${SERVER_HOST}:${DEPLOY_PATH}/incoming/"
+          ssh -p "$SERVER_PORT" -i ~/.ssh/id_ed25519 \
+            "${SERVER_USER}@${SERVER_HOST}" \
+            "/usr/local/bin/deploy-tjcu8 '$RELEASE_ID'"
+
+      - name: Verify public site
+        shell: bash
+        run: |
+          page="$(curl --fail --silent --show-error \
+            --retry 5 --retry-all-errors "$SITE_URL")"
+          grep -q '<title>呼气之窝</title>' <<< "$page"
+
+      - name: Remove runner SSH key
+        if: always()
+        run: rm -f ~/.ssh/id_ed25519
+
+  package:
+    name: Package GitHub Pages artifact
+    if: github.event_name != 'pull_request'
+    needs: quality
+    permissions:
+      contents: read
+      pages: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: "."
+
   deploy:
+    name: Deploy to GitHub Pages
+    if: github.event_name != 'pull_request'
+    needs: package
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: '.'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
