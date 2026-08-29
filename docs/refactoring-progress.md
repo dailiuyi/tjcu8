@@ -39,11 +39,12 @@ Codex 在本仓库中担任前端重构教练和实施者：先用 Spring 类比
 17. 完成阿里云隔离部署：建立版本目录与 `current` 原子链接、独立 Nginx 配置和 Let's Encrypt HTTPS，启用自动续期并验证原根站点未受影响。
 18. 完成阿里云自动发布：建立无 sudo 的 `tjcu8-deploy` 账号、受校验保护的原子发布脚本和 GitHub `production` Environment；负向校验与真实切换演练均通过。
 19. 完成首次真实 GitHub Actions 验收：静态质量门禁、GitHub Pages 发布和阿里云自动发布三条链路全部通过。
+20. 完成前端组件化准备：以标准库生成器统一五个页面的页头、导航和页脚，保留完整静态 HTML，并将布局契约接入质量门禁。
 
 ## 当前技术决策
 
-静态阶段继续使用只依赖标准库的 Python 生成器。生成器位于 `scripts/`，输出遵循 `docs/image-index-contract.md`。浏览器端 JavaScript 不能枚举静态服务器的图片目录；进入 Vue/Vite 后，再评估 Node 脚本或 `import.meta.glob`。质量门禁与部署目标解耦。阿里云使用 `/var/www/tjcu8/releases/<release-id>` 与 `current` 软链接原子发布，细节见 `docs/deployment.md`。
+静态阶段继续使用只依赖标准库的 Python 生成器。图片数据遵循 `docs/image-index-contract.md`，公共页面壳遵循 `docs/shared-layout.md`。浏览器端 JavaScript 不能枚举静态服务器的图片目录；进入 Vue/Vite 后，再评估 Node 脚本或 `import.meta.glob`。质量门禁与部署目标解耦。阿里云使用 `/var/www/tjcu8/releases/<release-id>` 与 `current` 软链接原子发布，细节见 `docs/deployment.md`。
 
 ## 下一步
 
-进入前端组件化准备模块：审计五个页面重复的页头、导航和页脚，选择适合当前静态站点的最小复用方案；先处理公共布局边界，不修改现有文案和视觉设计。
+进入 CSS 架构模块：把当前单文件样式按基础规则、公共布局、组件和响应式职责拆分，保持加载顺序、现有文案和桌面/移动端视觉不变。

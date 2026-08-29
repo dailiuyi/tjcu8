@@ -6,6 +6,13 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+from site_layout import (
+    PAGE_CONFIGS,
+    SHARED_FOOTER_TEXT,
+    current_navigation_href,
+    expected_navigation,
+)
+
 CONTRACT_VERSION = 1
 IMAGE_FIELDS = {"id", "src", "album", "caption", "alt"}
 SUPPORTED_EXTENSIONS = {".gif", ".jpeg", ".jpg", ".png"}
@@ -15,67 +22,16 @@ IMAGE_ROOT = REPOSITORY_ROOT / "image"
 INDEX_PATH = REPOSITORY_ROOT / "pages" / "json" / "image_index.json"
 
 
-
-
 PAGE_TITLES = {
-    "index.html": "呼气之窝",
-    "pages/about.html": "呼气之窝 - 关于我们",
-    "pages/services.html": "呼气之窝 - 服务",
-    "pages/contact.html": "呼气之窝 - 加入我们",
-    "pages/image-index.html": "呼气之窝 - 图片索引",
+    page_name: config["title"] for page_name, config in PAGE_CONFIGS.items()
 }
 PAGE_LAYOUTS = {
-    "index.html": {
-        "links": (
-            ("首页", "index.html"),
-            ("关于我们", "pages/about.html"),
-            ("服务", "pages/services.html"),
-            ("加入我们", "pages/contact.html"),
-        ),
-        "current": "index.html",
-    },
-    "pages/about.html": {
-        "links": (
-            ("首页", "../index.html"),
-            ("关于我们", "about.html"),
-            ("服务", "services.html"),
-            ("加入我们", "contact.html"),
-        ),
-        "current": "about.html",
-    },
-    "pages/services.html": {
-        "links": (
-            ("首页", "../index.html"),
-            ("关于我们", "about.html"),
-            ("服务", "services.html"),
-            ("加入我们", "contact.html"),
-        ),
-        "current": "services.html",
-    },
-    "pages/contact.html": {
-        "links": (
-            ("首页", "../index.html"),
-            ("关于我们", "about.html"),
-            ("服务", "services.html"),
-            ("加入我们", "contact.html"),
-        ),
-        "current": "contact.html",
-    },
-    "pages/image-index.html": {
-        "links": (
-            ("首页", "../index.html"),
-            ("关于我们", "about.html"),
-            ("服务", "services.html"),
-            ("加入我们", "contact.html"),
-        ),
-        "current": "services.html",
-    },
+    page_name: {
+        "links": expected_navigation(page_name),
+        "current": current_navigation_href(page_name),
+    }
+    for page_name in PAGE_CONFIGS
 }
-SHARED_FOOTER = (
-    "© 2024 呼气之窝. 保留所有权利.",
-    "版权所有,未经许可不得转载.",
-    "收买h7不在版权考虑范围之内",
-)
 
 
 class ReferenceParser(HTMLParser):
@@ -466,7 +422,7 @@ def check_page_layout(errors):
                 f"{expected['current']}"
             )
 
-        if tuple(parser.footer_paragraphs) != SHARED_FOOTER:
+        if tuple(parser.footer_paragraphs) != SHARED_FOOTER_TEXT:
             errors.append(f"{page_name}: shared footer does not match the contract")
 
     return len(PAGE_LAYOUTS)

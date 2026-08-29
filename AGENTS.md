@@ -10,13 +10,14 @@ Run commands from the repository root:
 
 ```powershell
 python -m http.server 8000
+python scripts/generate-shared-layout.py
 python scripts/generate-image-index.py
 python scripts/check-site.py
 python -m json.tool pages/json/image_index.json
 git diff --check
 ```
 
-The first command serves the site at `http://localhost:8000/`; no build step is required. Run the generator after image changes. The checker validates references, layout, accessibility, and image data. `git diff --check` catches whitespace errors. Keep validation independent from the selected deployment target.
+The first command serves the site at `http://localhost:8000/`; no build step is required. Run the corresponding generator after shared-layout or image changes. The checker validates references, layout, accessibility, and image data. `git diff --check` catches whitespace errors. Keep validation independent from the selected deployment target.
 
 ## Coding Style & Naming Conventions
 

@@ -23,10 +23,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Verify generated image index
+      - name: Verify generated site files
         run: |
+          python scripts/generate-shared-layout.py
           python scripts/generate-image-index.py
-          git diff --exit-code -- pages/json/image_index.json
+          git diff --exit-code -- index.html pages/*.html pages/json/image_index.json
 
       - name: Check site contracts
         run: python scripts/check-site.py
