@@ -32,15 +32,23 @@ CSS_MODULES = (
 )
 CSS_REQUIRED_MARKERS = {
     "base.css": ("body {", ".visually-hidden {"),
-    "layout.css": (".header {", ".navigation a {", "footer {"),
+    "layout.css": (
+        ".header {",
+        ".logo:focus-visible {",
+        ".navigation a {",
+        "footer {",
+    ),
     "components.css": (".box,", ".image-gallery {", ".body-text {"),
     "pages.css": (".link-list {", ".services-list {"),
     "responsive.css": (
         "@media (prefers-reduced-motion: reduce)",
+        ".logo:hover img {",
         "@media (max-width: 768px)",
     ),
 }
 JS_ROOT = REPOSITORY_ROOT / "js"
+SHARED_JS_ENTRY_PATH = JS_ROOT / "script.js"
+SHARED_JS_MODULE_PATH = JS_ROOT / "logo-animation.js"
 IMAGE_INDEX_JS_ENTRY_PATH = JS_ROOT / "image-index.js"
 IMAGE_INDEX_JS_IMPORTS = (
     "./image-index/data.js",
@@ -225,6 +233,7 @@ class LayoutParser(HTMLParser):
         self.navigation_label = None
         self.navigation_links = []
         self.footer_paragraphs = []
+        self.logo_controls = []
         self.in_navigation = False
         self.in_footer = False
         self.current_link = None
@@ -232,7 +241,16 @@ class LayoutParser(HTMLParser):
 
     def handle_starttag(self, tag, attributes):
         attribute_map = dict(attributes)
+        classes = set(attribute_map.get("class", "").split())
 
+        if "logo" in classes:
+            self.logo_controls.append(
+                (
+                    tag,
+                    attribute_map.get("type"),
+                    attribute_map.get("aria-label"),
+                )
+            )
         if tag in self.tag_counts:
             self.tag_counts[tag] += 1
         if tag == "nav" and "navigation" in attribute_map.get("class", "").split():
@@ -355,6 +373,61 @@ def load_site_css(errors):
 
     return "\n".join(module_contents)
 
+
+def check_shared_javascript(errors):
+    for page_name in PAGE_CONFIGS:
+        page_path = REPOSITORY_ROOT / page_name
+        script_source = "js/script.js" if page_name == "index.html" else "../js/script.js"
+        expected_script = f'<script type="module" src="{script_source}"></script>'
+        try:
+            page_html = page_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            errors.append(f"{page_name}: cannot inspect shared script: {error}")
+            continue
+        if page_html.count(expected_script) != 1:
+            errors.append(f"{page_name}: expected one shared ES Module entry")
+
+    try:
+        entry_source = SHARED_JS_ENTRY_PATH.read_text(encoding="utf-8")
+        module_source = SHARED_JS_MODULE_PATH.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as error:
+        errors.append(f"shared JavaScript module cannot be read: {error}")
+        return 0
+
+    imports = tuple(re.findall(r"from\s+['\"]([^'\"]+)['\"]", entry_source))
+    if imports != ("./logo-animation.js",):
+        errors.append("js/script.js: imports must match the shared module contract")
+    if "initializeLogoAnimation();" not in entry_source:
+        errors.append("js/script.js: shared animation must be initialized")
+    if any(
+        marker in entry_source
+        for marker in ("hoverTimer", "rotationSpeed", "requestAnimationFrame")
+    ):
+        errors.append("js/script.js: entrypoint contains animation implementation")
+
+    required_markers = (
+        "export function initializeLogoAnimation",
+        "if (!logo || !logoImage)",
+        "startDelayMs = LOGO_START_DELAY_MS",
+        "rotationSpeed = 2",
+        "rotationSpeed += 0.5",
+        "logo.addEventListener(eventName, listener)",
+        "['mouseenter', startAnimation]",
+        "['mouseleave', stopAnimation]",
+        "['click', startAnimation]",
+        "['blur', stopAnimation]",
+        "['keydown', handleKeydown]",
+        "event.key === 'Escape'",
+        "prefers-reduced-motion: reduce",
+        "handleMotionChange",
+    )
+    for marker in required_markers:
+        if marker not in module_source:
+            errors.append(
+                f"js/logo-animation.js: required behavior marker is missing: {marker}"
+            )
+
+    return 1
 
 def check_image_index_javascript(errors):
     page_path = REPOSITORY_ROOT / "pages" / "image-index.html"
@@ -547,8 +620,17 @@ def check_page_layout(errors):
             if count != 1:
                 errors.append(f"{page_name}: expected exactly one {tag}, found {count}")
 
+        if parser.logo_controls != [
+            ("button", "button", "播放呼气之窝 Logo 动画")
+        ]:
+            errors.append(
+                f"{page_name}: shared logo must be one labelled button"
+            )
+
         if parser.navigation_label != "主导航":
-            errors.append(f"{page_name}: shared navigation must use aria-label='主导航'")
+            errors.append(
+                f"{page_name}: shared navigation must use aria-label='主导航'"
+            )
 
         actual_links = tuple(
             (link["text"], link["href"]) for link in parser.navigation_links
@@ -686,6 +768,7 @@ def main():
     check_services_structure(errors)
     css = load_site_css(errors)
     check_accessibility(errors, css)
+    shared_javascript_module_count = check_shared_javascript(errors)
     javascript_module_count = check_image_index_javascript(errors)
     record_count, image_count = check_image_index(errors)
 
@@ -697,8 +780,9 @@ def main():
 
     print(
         f"Site check passed: {html_count} HTML files, {reference_count} local references, "
-        f"{layout_count} shared layouts, {javascript_module_count} image-index "
-        f"JavaScript modules, {record_count} index records, {image_count} local images."
+        f"{layout_count} shared layouts, {shared_javascript_module_count} shared "
+        f"JavaScript module, {javascript_module_count} image-index JavaScript "
+        f"modules, {record_count} index records, {image_count} local images."
     )
     return 0
 

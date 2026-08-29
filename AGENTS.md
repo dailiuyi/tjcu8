@@ -13,6 +13,7 @@ python -m http.server 8000
 python scripts/generate-shared-layout.py
 python scripts/generate-image-index.py
 python scripts/check-site.py
+node scripts/check-logo-animation.mjs
 node scripts/check-image-index-js.mjs
 python -m json.tool pages/json/image_index.json
 git diff --check

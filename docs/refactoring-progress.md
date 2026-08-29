@@ -42,11 +42,12 @@ Codex 在本仓库中担任前端重构教练和实施者：先用 Spring 类比
 20. 完成前端组件化准备：以标准库生成器统一五个页面的页头、导航和页脚，保留完整静态 HTML，并将布局契约接入质量门禁。
 21. 完成 CSS 架构模块：以 `style.css` 为稳定入口，将基础、布局、公共组件、页面组件和响应式规则拆分，并把模块顺序接入自动检查。
 22. 完成图片索引 JavaScript 架构模块：以原生 ES Modules 分离数据加载与契约校验、列表渲染和预览状态机，并加入 Node 标准库行为检查。
+23. 完成全站通用 JavaScript 模块：将 Logo 动画封装为原生 ES Module，以按钮语义支持鼠标和键盘触发，处理元素缺失与减少动态效果，并保留原始动画节奏。
 
 ## 当前技术决策
 
-静态阶段继续使用只依赖标准库的 Python 生成器。图片数据遵循 `docs/image-index-contract.md`，公共页面壳遵循 `docs/shared-layout.md`。CSS 以 `css/style.css` 为唯一入口，按 `docs/css-architecture.md` 的职责顺序加载。图片索引脚本使用浏览器原生 ES Modules，边界遵循 `docs/image-index-javascript.md`。浏览器端 JavaScript 不能枚举静态服务器的图片目录；进入 Vue/Vite 后，再评估 Node 脚本或 `import.meta.glob`。质量门禁与部署目标解耦。阿里云使用 `/var/www/tjcu8/releases/<release-id>` 与 `current` 软链接原子发布，细节见 `docs/deployment.md`。
+静态阶段继续使用只依赖标准库的 Python 生成器。图片数据遵循 `docs/image-index-contract.md`，公共页面壳遵循 `docs/shared-layout.md`。CSS 以 `css/style.css` 为唯一入口，按 `docs/css-architecture.md` 的职责顺序加载。图片索引脚本使用浏览器原生 ES Modules，边界遵循 `docs/image-index-javascript.md`；全站 Logo 动画遵循 `docs/shared-javascript.md`。浏览器端 JavaScript 不能枚举静态服务器的图片目录；进入 Vue/Vite 后，再评估 Node 脚本或 `import.meta.glob`。质量门禁与部署目标解耦。阿里云使用 `/var/www/tjcu8/releases/<release-id>` 与 `current` 软链接原子发布，细节见 `docs/deployment.md`。
 
 ## 下一步
 
-进入全站通用 JavaScript 模块：重构 Logo 动画的全局变量和逐行注释，补齐元素缺失、减少动态效果与键盘触发边界，保持现有视觉节奏。
+进入前端工具链过渡模块：引入 Vite 作为开发与构建入口但暂不改写为 Vue，先保证五个页面、静态资源路径、GitHub Pages 和阿里云部署保持一致；工具链稳定后再进入 Vue 组件化。

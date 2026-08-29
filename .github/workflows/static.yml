@@ -37,12 +37,13 @@ jobs:
       - name: Check site contracts
         run: python scripts/check-site.py
 
-      - name: Check image index JavaScript
+      - name: Check browser JavaScript
         shell: bash
         run: |
-          for source in js/image-index.js js/image-index/*.js; do
+          for source in js/script.js js/logo-animation.js js/image-index.js js/image-index/*.js; do
             node --input-type=module --check < "$source"
           done
+          node scripts/check-logo-animation.mjs
           node scripts/check-image-index-js.mjs
 
       - name: Check repository whitespace

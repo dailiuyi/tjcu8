@@ -51,10 +51,10 @@ def render_header(page_name):
     lines = [
         "    <!-- shared-header:start -->",
         '    <header class="header">',
-        '        <div class="logo">',
+        '        <button class="logo" type="button" aria-label="播放呼气之窝 Logo 动画">',
         f'            <img src="{logo_href}" alt="">',
         "            <span>呼气之窝</span>",
-        "        </div>",
+        "        </button>",
         '        <nav class="navigation" aria-label="主导航">',
         "            <ul>",
     ]

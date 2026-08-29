@@ -23,11 +23,21 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     font-family: 'Garamond', 'Segoe UI', 'Helvetica Neue', sans-serif;
     transition: transform 0.3s, color 0.3s;
+    appearance: none;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
 }
 
 .logo:hover {
     transform: scale(1.05);
     color: #cddc39;
+}
+
+.logo:focus-visible {
+    outline: 3px solid #cddc39;
+    outline-offset: 4px;
 }
 
 .logo img {
