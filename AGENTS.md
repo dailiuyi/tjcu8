@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This is a static site without a package manager or bundler. `index.html` is the homepage; additional pages live in `pages/`, CSS modules through `css/style.css`, and browser behavior in `js/`. Store media under `image/` and preserve Chinese directory names because links depend on them. `scripts/generate-image-index.py` generates `pages/json/image_index.json` under `docs/image-index-contract.md`. Deployment targets are GitHub Pages and an Alibaba Cloud personal server with a registered domain.
+This is a static site without a package manager or bundler. `index.html` is the homepage; additional pages live in `pages/`, CSS modules through `css/style.css`, and browser modules in `js/`. Store media under `image/` and preserve Chinese directory names because links depend on them. `scripts/generate-image-index.py` generates `pages/json/image_index.json` under `docs/image-index-contract.md`. Deployment targets are GitHub Pages and an Alibaba Cloud personal server with a registered domain.
 
 ## Build, Test, and Development Commands
 
@@ -13,6 +13,7 @@ python -m http.server 8000
 python scripts/generate-shared-layout.py
 python scripts/generate-image-index.py
 python scripts/check-site.py
+node scripts/check-image-index-js.mjs
 python -m json.tool pages/json/image_index.json
 git diff --check
 ```

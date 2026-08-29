@@ -23,6 +23,11 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
       - name: Verify generated site files
         run: |
           python scripts/generate-shared-layout.py
@@ -31,6 +36,14 @@ jobs:
 
       - name: Check site contracts
         run: python scripts/check-site.py
+
+      - name: Check image index JavaScript
+        shell: bash
+        run: |
+          for source in js/image-index.js js/image-index/*.js; do
+            node --input-type=module --check < "$source"
+          done
+          node scripts/check-image-index-js.mjs
 
       - name: Check repository whitespace
         run: |

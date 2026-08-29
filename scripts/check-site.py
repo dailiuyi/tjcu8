@@ -1,6 +1,7 @@
 """Validate local site references and the generated image index."""
 
 import json
+import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -37,6 +38,36 @@ CSS_REQUIRED_MARKERS = {
     "responsive.css": (
         "@media (prefers-reduced-motion: reduce)",
         "@media (max-width: 768px)",
+    ),
+}
+JS_ROOT = REPOSITORY_ROOT / "js"
+IMAGE_INDEX_JS_ENTRY_PATH = JS_ROOT / "image-index.js"
+IMAGE_INDEX_JS_IMPORTS = (
+    "./image-index/data.js",
+    "./image-index/gallery.js",
+    "./image-index/preview.js",
+)
+IMAGE_INDEX_JS_REQUIRED_MARKERS = {
+    "./image-index/data.js": (
+        "export function validateImageIndex",
+        "export async function loadImageIndex",
+        "image.src.startsWith('../image/')",
+    ),
+    "./image-index/gallery.js": (
+        "export function renderGallery",
+        "export function showGalleryError",
+        "link.rel = 'noopener noreferrer'",
+        "link.setAttribute('aria-controls', 'preview')",
+    ),
+    "./image-index/preview.js": (
+        "export function createPreviewController",
+        "function bindLink",
+        "link.addEventListener('mouseenter'",
+        "link.addEventListener('mousemove'",
+        "link.addEventListener('mouseleave'",
+        "link.addEventListener('focus'",
+        "link.addEventListener('blur'",
+        "link.addEventListener('keydown'",
     ),
 }
 
@@ -325,6 +356,70 @@ def load_site_css(errors):
     return "\n".join(module_contents)
 
 
+def check_image_index_javascript(errors):
+    page_path = REPOSITORY_ROOT / "pages" / "image-index.html"
+    expected_script = '<script type="module" src="../js/image-index.js"></script>'
+
+    try:
+        page_html = page_path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as error:
+        errors.append(f"pages/image-index.html: cannot read module entry: {error}")
+        return 0
+
+    if page_html.count(expected_script) != 1:
+        errors.append(
+            "pages/image-index.html: expected one ES Module image-index entry"
+        )
+
+    try:
+        entry_source = IMAGE_INDEX_JS_ENTRY_PATH.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as error:
+        errors.append(f"js/image-index.js: cannot read module entry: {error}")
+        return 0
+
+    actual_imports = tuple(
+        re.findall(r"from\s+['\"]([^'\"]+)['\"]", entry_source)
+    )
+    if actual_imports != IMAGE_INDEX_JS_IMPORTS:
+        errors.append("js/image-index.js: imports must match the module contract")
+
+    legacy_markers = (
+        "function validateImageIndex",
+        "function createImageLink",
+        "function showPreview",
+    )
+    if any(marker in entry_source for marker in legacy_markers):
+        errors.append("js/image-index.js: entrypoint contains module implementation")
+
+    module_sources = {}
+    for import_path in IMAGE_INDEX_JS_IMPORTS:
+        module_path = JS_ROOT / import_path.removeprefix("./")
+        try:
+            module_source = module_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            errors.append(f"js/{import_path.removeprefix('./')}: cannot read: {error}")
+            continue
+        module_sources[import_path] = module_source
+        for marker in IMAGE_INDEX_JS_REQUIRED_MARKERS[import_path]:
+            if marker not in module_source:
+                errors.append(
+                    f"js/{import_path.removeprefix('./')}: required responsibility "
+                    f"marker is missing: {marker}"
+                )
+
+    data_source = module_sources.get("./image-index/data.js", "")
+    gallery_source = module_sources.get("./image-index/gallery.js", "")
+    preview_source = module_sources.get("./image-index/preview.js", "")
+    if "document." in data_source or "window." in data_source:
+        errors.append("js/image-index/data.js: data module must not access the DOM")
+    if "fetch(" in gallery_source or "fetch(" in preview_source:
+        errors.append("image-index view modules must not fetch data")
+    if "document.createElement" in preview_source:
+        errors.append("js/image-index/preview.js: preview module must not render the list")
+
+    return len(module_sources)
+
+
 def check_accessibility(errors, css):
     for page_name, expected_title in PAGE_TITLES.items():
         page_path = REPOSITORY_ROOT / page_name
@@ -591,6 +686,7 @@ def main():
     check_services_structure(errors)
     css = load_site_css(errors)
     check_accessibility(errors, css)
+    javascript_module_count = check_image_index_javascript(errors)
     record_count, image_count = check_image_index(errors)
 
     if errors:
@@ -601,8 +697,8 @@ def main():
 
     print(
         f"Site check passed: {html_count} HTML files, {reference_count} local references, "
-        f"{layout_count} shared layouts, {record_count} index records, "
-        f"{image_count} local images."
+        f"{layout_count} shared layouts, {javascript_module_count} image-index "
+        f"JavaScript modules, {record_count} index records, {image_count} local images."
     )
     return 0
 
