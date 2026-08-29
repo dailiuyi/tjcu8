@@ -40,11 +40,12 @@ Codex 在本仓库中担任前端重构教练和实施者：先用 Spring 类比
 18. 完成阿里云自动发布：建立无 sudo 的 `tjcu8-deploy` 账号、受校验保护的原子发布脚本和 GitHub `production` Environment；负向校验与真实切换演练均通过。
 19. 完成首次真实 GitHub Actions 验收：静态质量门禁、GitHub Pages 发布和阿里云自动发布三条链路全部通过。
 20. 完成前端组件化准备：以标准库生成器统一五个页面的页头、导航和页脚，保留完整静态 HTML，并将布局契约接入质量门禁。
+21. 完成 CSS 架构模块：以 `style.css` 为稳定入口，将基础、布局、公共组件、页面组件和响应式规则拆分，并把模块顺序接入自动检查。
 
 ## 当前技术决策
 
-静态阶段继续使用只依赖标准库的 Python 生成器。图片数据遵循 `docs/image-index-contract.md`，公共页面壳遵循 `docs/shared-layout.md`。浏览器端 JavaScript 不能枚举静态服务器的图片目录；进入 Vue/Vite 后，再评估 Node 脚本或 `import.meta.glob`。质量门禁与部署目标解耦。阿里云使用 `/var/www/tjcu8/releases/<release-id>` 与 `current` 软链接原子发布，细节见 `docs/deployment.md`。
+静态阶段继续使用只依赖标准库的 Python 生成器。图片数据遵循 `docs/image-index-contract.md`，公共页面壳遵循 `docs/shared-layout.md`。CSS 以 `css/style.css` 为唯一入口，按 `docs/css-architecture.md` 的职责顺序加载。浏览器端 JavaScript 不能枚举静态服务器的图片目录；进入 Vue/Vite 后，再评估 Node 脚本或 `import.meta.glob`。质量门禁与部署目标解耦。阿里云使用 `/var/www/tjcu8/releases/<release-id>` 与 `current` 软链接原子发布，细节见 `docs/deployment.md`。
 
 ## 下一步
 
-进入 CSS 架构模块：把当前单文件样式按基础规则、公共布局、组件和响应式职责拆分，保持加载顺序、现有文案和桌面/移动端视觉不变。
+进入图片索引 JavaScript 架构模块：按数据加载、列表渲染和预览交互拆分职责，保持现有 JSON 契约、文案、键盘行为和视觉不变。

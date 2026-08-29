@@ -1,0 +1,103 @@
+/* 动效偏好与移动端覆盖规则集中在最后加载。 */
+/* 尊重系统的减少动态效果设置。 */
+@media (prefers-reduced-motion: reduce) {
+    .preview-card {
+        transition: none;
+    }
+}
+
+/* 小屏只覆盖布局尺寸，桌面端继续使用上方基础规则。 */
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+        margin: 12px;
+        padding: 15px;
+    }
+
+    .logo {
+        justify-content: center;
+        margin-top: 0;
+        margin-right: 0;
+    }
+
+    .navigation ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .navigation li {
+        margin-left: 0;
+    }
+
+    .navigation a {
+        display: block;
+        padding: 8px 12px;
+    }
+
+    .content {
+        padding: 12px;
+    }
+
+    .box,
+    .poem,
+    .about-content,
+    .about-image-group,
+    .body-text {
+        box-sizing: border-box;
+        max-width: 100%;
+        margin: 12px 0;
+        padding: 16px;
+    }
+
+    .poem:hover {
+        transform: none;
+    }
+
+    .image-gallery {
+        gap: 10px;
+        padding: 8px;
+    }
+
+    .normal-image,
+    .qr-code,
+    .image-luoshifen,
+    .image-nailong,
+    .image-tuanjian,
+    .image-win,
+    .image-battle {
+        width: auto;
+        max-width: 100%;
+    }
+
+    .service-item {
+        box-sizing: border-box;
+        width: 100%;
+        margin: 8px 0;
+    }
+
+    .construction-notice {
+        margin-top: 48px;
+    }
+
+    .link-item {
+        box-sizing: border-box;
+        max-width: 100%;
+        margin: 5px 0;
+    }
+
+    .link {
+        overflow-wrap: anywhere;
+    }
+
+    footer {
+        box-sizing: border-box;
+        padding: 10px 12px;
+    }
+}

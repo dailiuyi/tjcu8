@@ -1,0 +1,119 @@
+/* 图片索引与服务页的页面级组件。 */
+/* 图片索引列表由 JSON 动态生成，预览状态由独立卡片承载。 */
+.link-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.link-item {
+    padding: 10px 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.3s;
+    text-align: center;
+    margin: 5px 10px;
+    position: relative;
+}
+
+.link-item:hover {
+    background-color: #e0e0e0;
+    transform: scale(1.10) translateY(-10px);
+    transition: transform 0.7s;
+}
+
+.link-item a {
+    text-decoration: none;
+    color: #007BFF;
+    font-weight: bold;
+}
+
+.link:hover {
+    color: #0056b3;
+}
+
+/* hidden 移出布局，show 只控制预览卡片的淡入淡出。 */
+.preview-card {
+    position: absolute;
+    z-index: 10;
+    width: min(220px, calc(100vw - 24px));
+    overflow: hidden;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: opacity 160ms ease, transform 160ms ease, visibility 160ms;
+}
+
+.preview-card[hidden] {
+    display: none;
+}
+
+.preview-card.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.preview-image {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.preview-image[hidden] {
+    display: none;
+}
+
+.preview-status,
+.gallery-status {
+    margin: 0;
+    padding: 12px;
+}
+
+.preview-status.is-error,
+.gallery-status.is-error {
+    color: #b42318;
+}
+
+.link:focus-visible {
+    outline: 3px solid #0056b3;
+    outline-offset: 4px;
+}
+
+.services-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.service-item {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 10px;
+    width: 30%;
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.service-item h3 {
+    margin-top: 0;
+}
+
+.service-item p {
+    font-size: 16px;
+    color: #666;
+}
+
+.construction-notice {
+    margin-top: 80px;
+}

@@ -20,6 +20,25 @@ SUPPORTED_EXTENSIONS = {".gif", ".jpeg", ".jpg", ".png"}
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
 IMAGE_ROOT = REPOSITORY_ROOT / "image"
 INDEX_PATH = REPOSITORY_ROOT / "pages" / "json" / "image_index.json"
+CSS_ROOT = REPOSITORY_ROOT / "css"
+CSS_ENTRY_PATH = CSS_ROOT / "style.css"
+CSS_MODULES = (
+    "base.css",
+    "layout.css",
+    "components.css",
+    "pages.css",
+    "responsive.css",
+)
+CSS_REQUIRED_MARKERS = {
+    "base.css": ("body {", ".visually-hidden {"),
+    "layout.css": (".header {", ".navigation a {", "footer {"),
+    "components.css": (".box,", ".image-gallery {", ".body-text {"),
+    "pages.css": (".link-list {", ".services-list {"),
+    "responsive.css": (
+        "@media (prefers-reduced-motion: reduce)",
+        "@media (max-width: 768px)",
+    ),
+}
 
 
 PAGE_TITLES = {
@@ -269,7 +288,44 @@ def check_internal_references(errors):
     return len(html_paths), reference_count
 
 
-def check_accessibility(errors):
+def load_site_css(errors):
+    expected_lines = ["/* 稳定入口按依赖从通用到覆盖加载。 */"]
+    expected_lines.extend(
+        f'@import url("{module_name}");' for module_name in CSS_MODULES
+    )
+    expected_entry = "\n".join(expected_lines)
+
+    try:
+        entry_css = CSS_ENTRY_PATH.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as error:
+        errors.append(f"css/style.css: cannot read CSS entrypoint: {error}")
+        return ""
+
+    if entry_css.replace("\r\n", "\n").strip() != expected_entry:
+        errors.append("css/style.css: imports must match the CSS module contract")
+
+    module_contents = []
+    for module_name in CSS_MODULES:
+        module_path = CSS_ROOT / module_name
+        try:
+            module_css = module_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            errors.append(f"css/{module_name}: cannot read CSS module: {error}")
+            continue
+        if "@import" in module_css:
+            errors.append(f"css/{module_name}: nested imports are not allowed")
+        for marker in CSS_REQUIRED_MARKERS[module_name]:
+            if marker not in module_css:
+                errors.append(
+                    f"css/{module_name}: required responsibility marker is missing: "
+                    f"{marker}"
+                )
+        module_contents.append(module_css)
+
+    return "\n".join(module_contents)
+
+
+def check_accessibility(errors, css):
     for page_name, expected_title in PAGE_TITLES.items():
         page_path = REPOSITORY_ROOT / page_name
         parser = AccessibilityParser()
@@ -310,11 +366,10 @@ def check_accessibility(errors):
     if len(set(PAGE_TITLES.values())) != len(PAGE_TITLES):
         errors.append("Page titles must be unique")
 
-    css = (REPOSITORY_ROOT / "css" / "style.css").read_text(encoding="utf-8")
     if ".visually-hidden {" not in css:
-        errors.append("css/style.css: visually-hidden utility is missing")
+        errors.append("CSS modules: visually-hidden utility is missing")
     if '.navigation a[aria-current="page"] {' not in css:
-        errors.append("css/style.css: current navigation style is missing")
+        errors.append("CSS modules: current navigation style is missing")
 
 
 def check_services_structure(errors):
@@ -534,7 +589,8 @@ def main():
     layout_count = check_page_layout(errors)
     check_about_structure(errors)
     check_services_structure(errors)
-    check_accessibility(errors)
+    css = load_site_css(errors)
+    check_accessibility(errors, css)
     record_count, image_count = check_image_index(errors)
 
     if errors:
