@@ -38,6 +38,7 @@ Codex 在本仓库中担任前端重构教练和实施者：先用 Spring 类比
 16. 建立 GitHub Actions 质量门禁：Pull Request 和 `main` 推送先检查生成数据、站点契约与仓库空白格式，只有非 PR 事件通过后才打包并发布 GitHub Pages。
 17. 完成阿里云隔离部署：建立版本目录与 `current` 原子链接、独立 Nginx 配置和 Let's Encrypt HTTPS，启用自动续期并验证原根站点未受影响。
 18. 完成阿里云自动发布：建立无 sudo 的 `tjcu8-deploy` 账号、受校验保护的原子发布脚本和 GitHub `production` Environment；负向校验与真实切换演练均通过。
+19. 完成首次真实 GitHub Actions 验收：静态质量门禁、GitHub Pages 发布和阿里云自动发布三条链路全部通过。
 
 ## 当前技术决策
 
@@ -45,4 +46,4 @@ Codex 在本仓库中担任前端重构教练和实施者：先用 Spring 类比
 
 ## 下一步
 
-提交并推送当前静态阶段成果，验收第一次真实 GitHub Actions 质量门禁、GitHub Pages 发布和阿里云自动发布；三条链路全部通过后，再进入前端组件化准备模块。
+进入前端组件化准备模块：审计五个页面重复的页头、导航和页脚，选择适合当前静态站点的最小复用方案；先处理公共布局边界，不修改现有文案和视觉设计。
