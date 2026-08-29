@@ -65,7 +65,7 @@ jobs:
         shell: bash
         run: |
           release_id="${GITHUB_SHA::12}-${GITHUB_RUN_ATTEMPT}"
-          archive="tjcu8-${release_id}.tar.gz"
+          archive="${release_id}.tar.gz"
           tar -czf "$archive" index.html css js pages image
           sha256sum "$archive" | awk '{print $1}' > "$archive.sha256"
           echo "RELEASE_ID=$release_id" >> "$GITHUB_ENV"
