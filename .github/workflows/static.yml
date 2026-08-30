@@ -46,8 +46,7 @@ jobs:
           for source in js/script.js js/logo-animation.js js/image-index.js js/image-index/*.js; do
             node --input-type=module --check < "$source"
           done
-          node scripts/check-logo-animation.mjs
-          node scripts/check-image-index-js.mjs
+          npm run check:js
 
       - name: Build deployable site
         run: |

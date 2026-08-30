@@ -2,7 +2,7 @@
 
 ## 职责边界
 
-`js/script.js` 是全站行为的组合入口，只负责导入并初始化功能；`js/logo-animation.js` 独立管理 Logo 动画的状态、计时器和事件。用 Spring 类比，前者接近应用启动配置，后者接近一个职责单一、可测试的组件，不再把可变状态暴露为全局变量。
+`js/script.js` 是全站行为的组合入口：先 hydration Vue 公共页面壳，再为接管后的 Logo 绑定动画。`js/logo-animation.js` 独立管理动画状态、计时器和事件。用 Spring 类比，入口接近应用启动配置，布局与动画是两个职责单一、可测试的组件。
 
 ## 交互契约
 
@@ -15,7 +15,7 @@
 ## 验证
 
 ```powershell
-node scripts/check-logo-animation.mjs
+npm run check:js
 python scripts/check-site.py
 ```
 

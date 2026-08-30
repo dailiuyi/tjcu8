@@ -34,6 +34,7 @@ CSS_MODULES = (
 CSS_REQUIRED_MARKERS = {
     "base.css": ("body {", ".visually-hidden {"),
     "layout.css": (
+        "[data-vue-shell] {",
         ".header {",
         ".logo:focus-visible {",
         ".navigation a {",
@@ -50,6 +51,12 @@ CSS_REQUIRED_MARKERS = {
 JS_ROOT = REPOSITORY_ROOT / "js"
 SHARED_JS_ENTRY_PATH = JS_ROOT / "script.js"
 SHARED_JS_MODULE_PATH = JS_ROOT / "logo-animation.js"
+SHARED_LAYOUT_JS_PATH = JS_ROOT / "shared-layout.js"
+SHARED_LAYOUT_CONFIG_PATH = JS_ROOT / "shared-layout" / "config.js"
+SHARED_LAYOUT_COMPONENT_PATHS = (
+    JS_ROOT / "components" / "SiteHeader.vue",
+    JS_ROOT / "components" / "SiteFooter.vue",
+)
 IMAGE_INDEX_JS_ENTRY_PATH = JS_ROOT / "image-index.js"
 IMAGE_INDEX_JS_IMPORTS = (
     "./image-index/data.js",
@@ -235,6 +242,7 @@ class LayoutParser(HTMLParser):
         self.navigation_links = []
         self.footer_paragraphs = []
         self.logo_controls = []
+        self.vue_shells = []
         self.in_navigation = False
         self.in_footer = False
         self.current_link = None
@@ -244,6 +252,14 @@ class LayoutParser(HTMLParser):
         attribute_map = dict(attributes)
         classes = set(attribute_map.get("class", "").split())
 
+        if attribute_map.get("data-vue-shell"):
+            self.vue_shells.append(
+                (
+                    tag,
+                    attribute_map.get("data-vue-shell"),
+                    attribute_map.get("data-page-name"),
+                )
+            )
         if "logo" in classes:
             self.logo_controls.append(
                 (
@@ -398,13 +414,21 @@ def check_shared_javascript(errors):
     try:
         entry_source = SHARED_JS_ENTRY_PATH.read_text(encoding="utf-8")
         module_source = SHARED_JS_MODULE_PATH.read_text(encoding="utf-8")
+        layout_source = SHARED_LAYOUT_JS_PATH.read_text(encoding="utf-8")
+        layout_config = SHARED_LAYOUT_CONFIG_PATH.read_text(encoding="utf-8")
+        component_sources = [
+            path.read_text(encoding="utf-8")
+            for path in SHARED_LAYOUT_COMPONENT_PATHS
+        ]
     except (OSError, UnicodeError) as error:
-        errors.append(f"shared JavaScript module cannot be read: {error}")
+        errors.append(f"shared JavaScript or Vue module cannot be read: {error}")
         return 0
 
     imports = tuple(re.findall(r"from\s+['\"]([^'\"]+)['\"]", entry_source))
-    if imports != ("./logo-animation.js",):
+    if imports != ("./logo-animation.js", "./shared-layout.js"):
         errors.append("js/script.js: imports must match the shared module contract")
+    if "initializeSharedLayout();" not in entry_source:
+        errors.append("js/script.js: Vue shared layout must be initialized")
     if "initializeLogoAnimation();" not in entry_source:
         errors.append("js/script.js: shared animation must be initialized")
     if any(
@@ -412,6 +436,34 @@ def check_shared_javascript(errors):
         for marker in ("hoverTimer", "rotationSpeed", "requestAnimationFrame")
     ):
         errors.append("js/script.js: entrypoint contains animation implementation")
+
+    layout_markers = (
+        "import { createSSRApp } from 'vue'",
+        "SiteHeader.vue",
+        "SiteFooter.vue",
+        "createHeaderProps(pageName)",
+        "headerApp.mount(headerHost)",
+        "footerApp.mount(footerHost)",
+        "if (!headerHost || !footerHost)",
+    )
+    for marker in layout_markers:
+        if marker not in layout_source:
+            errors.append(
+                f"js/shared-layout.js: required Vue marker is missing: {marker}"
+            )
+
+    for page_name in PAGE_CONFIGS:
+        if f"'{page_name}'" not in layout_config:
+            errors.append(
+                f"js/shared-layout/config.js: page contract is missing: {page_name}"
+            )
+    for component_path, component_source in zip(
+        SHARED_LAYOUT_COMPONENT_PATHS, component_sources
+    ):
+        if "<template>" not in component_source or "defineProps" not in component_source:
+            errors.append(
+                f"{relative_name(component_path)}: expected one props-driven SFC"
+            )
 
     required_markers = (
         "export function initializeLogoAnimation",
@@ -435,7 +487,8 @@ def check_shared_javascript(errors):
                 f"js/logo-animation.js: required behavior marker is missing: {marker}"
             )
 
-    return 1
+    return 4 + len(component_sources)
+
 
 def check_image_index_javascript(errors):
     page_path = REPOSITORY_ROOT / "pages" / "image-index.html"
@@ -628,6 +681,12 @@ def check_page_layout(errors):
             if count != 1:
                 errors.append(f"{page_name}: expected exactly one {tag}, found {count}")
 
+        if parser.vue_shells != [
+            ("div", "header", page_name),
+            ("div", "footer", None),
+        ]:
+            errors.append(f"{page_name}: Vue layout hosts do not match the contract")
+
         if parser.logo_controls != [
             ("button", "button", "播放呼气之窝 Logo 动画")
         ]:
@@ -789,7 +848,7 @@ def main():
     print(
         f"Site check passed: {html_count} HTML files, {reference_count} local references, "
         f"{layout_count} shared layouts, {shared_javascript_module_count} shared "
-        f"JavaScript module, {javascript_module_count} image-index JavaScript "
+        f"JavaScript/Vue modules, {javascript_module_count} image-index JavaScript "
         f"modules, {record_count} index records, {image_count} local images."
     )
     return 0

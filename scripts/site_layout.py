@@ -50,9 +50,9 @@ def render_header(page_name):
     logo_href = relative_href(page_name, "image/logo.jpg")
     lines = [
         "    <!-- shared-header:start -->",
-        '    <header class="header">',
+        f'    <div data-vue-shell="header" data-page-name="{page_name}"><header class="header">',
         '        <button class="logo" type="button" aria-label="播放呼气之窝 Logo 动画">',
-        f'            <img src="{logo_href}" alt="">',
+        f'            <img vite-ignore src="{logo_href}" alt="">',
         "            <span>呼气之窝</span>",
         "        </button>",
         '        <nav class="navigation" aria-label="主导航">',
@@ -68,7 +68,7 @@ def render_header(page_name):
         [
             "            </ul>",
             "        </nav>",
-            "    </header>",
+            "    </header></div>",
             "    <!-- shared-header:end -->",
         ]
     )
@@ -79,11 +79,11 @@ def render_footer():
     return "\n".join(
         [
             "    <!-- shared-footer:start -->",
-            "    <footer>",
+            '    <div data-vue-shell="footer"><footer>',
             "        <p>&copy; 2024 呼气之窝. 保留所有权利.</p>",
             "        <p>版权所有,未经许可不得转载.</p>",
             '        <p class="strikethrough">收买h7不在版权考虑范围之内</p>',
-            "    </footer>",
+            "    </footer></div>",
             "    <!-- shared-footer:end -->",
         ]
     )

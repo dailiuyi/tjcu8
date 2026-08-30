@@ -1,6 +1,6 @@
 # tjcu8
 
-A five-page static website built with Vite and deployed to GitHub Pages and `tjcu8.elma-gohan.xyz`.
+A five-page Vite site using Vue 3 for its shared page shell, deployed to GitHub Pages and `tjcu8.elma-gohan.xyz`.
 
 ```powershell
 npm ci

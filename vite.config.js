@@ -1,5 +1,6 @@
 import { cp } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import vue from '@vitejs/plugin-vue';
 import { defineConfig } from 'vite';
 
 const projectRoot = import.meta.dirname;
@@ -44,7 +45,7 @@ function copyRuntimeData() {
 export default defineConfig({
     base: './',
     publicDir: false,
-    plugins: [preserveStaticImageUrls(), copyRuntimeData()],
+    plugins: [vue(), preserveStaticImageUrls(), copyRuntimeData()],
     build: {
         outDir: 'dist',
         emptyOutDir: true,

@@ -2,9 +2,9 @@
 
 ## 模块边界
 
-Vite 只接管开发服务器和生产构建，不改变五个 HTML 页面，也不引入 Vue。用 Spring 类比，仓库根目录是源码工程，`dist/` 是唯一可部署制品，类似构建后生成的 JAR。
+Vite 接管开发服务器、Vue SFC 编译和生产构建，但五个 HTML 仍是独立页面入口，不使用 Vue Router。用 Spring 类比，仓库根目录是源码工程，`dist/` 是唯一可部署制品，类似构建后生成的 JAR。
 
-`vite.config.js` 将 `index.html` 和 `pages/` 下四个页面声明为多页面入口。`base: './'` 让同一份产物同时适配根域名和 GitHub Pages 子路径。JavaScript 与 CSS 生成带哈希文件；原图片目录和 JSON 数据按现有路径复制，以继续满足图片索引契约。HTML 图片在构建阶段标记为 `vite-ignore`，避免再生成一份大型哈希副本，源码页面不需要加入构建专用属性。
+`vite.config.js` 将 `index.html` 和 `pages/` 下四个页面声明为多页面入口。`base: './'` 让同一份产物同时适配根域名和 GitHub Pages 子路径。JavaScript 与 CSS 生成带哈希文件；原图片目录和 JSON 数据按现有路径复制，以继续满足图片索引契约。静态 fallback 与 Vue Header 组件中的图片都标记为 `vite-ignore`，避免为同一批大型图片再生成哈希副本；JavaScript、Vue 运行时和 CSS 仍正常打包。
 
 ## 常用命令
 

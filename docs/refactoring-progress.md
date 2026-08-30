@@ -44,11 +44,12 @@ Codex 在本仓库中担任前端重构教练和实施者：先用 Spring 类比
 22. 完成图片索引 JavaScript 架构模块：以原生 ES Modules 分离数据加载与契约校验、列表渲染和预览状态机，并加入 Node 标准库行为检查。
 23. 完成全站通用 JavaScript 模块：将 Logo 动画封装为原生 ES Module，以按钮语义支持鼠标和键盘触发，处理元素缺失与减少动态效果，并保留原始动画节奏。
 24. 完成 Vite 工具链过渡模块：以五个 HTML 为多页面入口，建立开发、构建、产物检查和单一 `dist/` 发布契约；暂不引入 Vue，并保持页面文案、资源路径语义和双部署结果。
+25. 完成 Vue 公共页面壳模块：引入 Vue 3 与官方 Vite 插件，将页头、主导航和页脚拆为 props 驱动的 SFC，并以静态 fallback + hydration 保持五页首屏、无脚本导航和部署契约。
 
 ## 当前技术决策
 
-Python 生成器继续负责共享页面壳和图片 JSON，Vite 只负责开发服务器与生产构建。图片数据遵循 `docs/image-index-contract.md`，公共页面壳遵循 `docs/shared-layout.md`，CSS、图片索引脚本和 Logo 动画分别遵循现有架构文档。五个 HTML 是 Vite 多页面入口，工具链边界见 `docs/vite-toolchain.md`；`dist/` 是唯一部署制品，GitHub Pages 与阿里云必须消费同一次 CI 构建。浏览器端 JavaScript 仍不枚举图片目录，是否改用 `import.meta.glob` 留到图片索引 Vue 组件化阶段。阿里云继续使用原子发布结构，细节见 `docs/deployment.md`。
+Python 生成器继续负责共享页面壳静态 fallback 和图片 JSON；Vue 3 只接管五页共用的 Header/Nav/Footer，边界见 `docs/vue-shared-layout.md`。Vite 负责 SFC 编译与生产构建，五个 HTML 仍是多页面入口，不使用 Vue Router。图片数据、CSS、图片索引脚本和 Logo 动画继续遵循现有架构文档；浏览器端仍不枚举图片目录。`dist/` 是唯一部署制品，GitHub Pages 与阿里云消费同一次 CI 构建并继续使用既有原子发布结构。
 
 ## 下一步
 
-进入第一个 Vue 组件化模块：引入 Vue 3 与官方 Vite 插件，将五个页面共同的页头、主导航和页脚整理为公共组件；保留五个页面入口、现有文案和静态资源契约，不改图片索引业务。
+进入第一个页面级 Vue 模块：仅将 `index.html` 的诗歌和两张事迹图片整理为 `HomePage.vue`，继续保留静态 fallback 和正式主页 URL；暂不改关于、服务、联系或图片索引页面。

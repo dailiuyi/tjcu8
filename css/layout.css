@@ -1,4 +1,8 @@
 /* 公共页头、导航、内容区和页脚布局。 */
+[data-vue-shell] {
+    display: contents;
+}
+
 .header {
     background: linear-gradient(90deg, #246f27, #6fae6a);
     color: white;
