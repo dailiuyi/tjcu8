@@ -20,4 +20,4 @@ npm run preview
 
 ## 部署契约
 
-GitHub Actions 使用 Node 24 和 `npm ci`，在源码检查通过后构建一次 `dist/`。GitHub Pages 与阿里云部署下载同一个短期构建产物；任何部署都不能再次直接打包仓库根目录。
+GitHub Actions 使用 Node 24 和 `npm ci`，在源码检查通过后构建一次 `dist/`。GitHub Pages 与阿里云部署下载同一个短期构建产物；任何部署都不能再次直接打包仓库根目录。GitHub Pages 的发布源必须设置为 `GitHub Actions`，不能同时启用 legacy 分支发布。

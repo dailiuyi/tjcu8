@@ -24,6 +24,6 @@
 
 ## 自动发布
 
-`.github/workflows/static.yml` 的质量任务只构建一次 `dist/` 并上传为短期构建产物。GitHub Pages 和 `deploy-server` 下载同一产物，确保两个部署目标内容一致。`deploy-server` 只在质量门禁通过、事件不是 Pull Request 且仓库变量 `DEPLOY_ENABLED=true` 时运行；它打包 `dist/`、上传到 `incoming/`，再调用 `deploy-tjcu8` 校验 SHA-256、检查归档路径、创建 release、切换 `current` 并验证首页；验证失败会恢复上一个 release。
+`.github/workflows/static.yml` 的质量任务只构建一次 `dist/` 并上传为短期构建产物。GitHub Pages 和 `deploy-server` 下载同一产物，确保两个部署目标内容一致。仓库 Settings → Pages → Source 必须保持 `GitHub Actions`；若恢复为从 `main /` 发布，legacy 流程会在自定义工作流之后用源码覆盖 Vite 产物。`deploy-server` 只在质量门禁通过、事件不是 Pull Request 且仓库变量 `DEPLOY_ENABLED=true` 时运行；它打包 `dist/`、上传到 `incoming/`，再调用 `deploy-tjcu8` 校验 SHA-256、检查归档路径、创建 release、切换 `current` 并验证首页；验证失败会恢复上一个 release。
 
 GitHub `production` Environment 保存 `SERVER_HOST`、`SERVER_PORT`、`SERVER_USER`、`SERVER_SSH_KEY` 和 `SERVER_KNOWN_HOSTS`，以及 `DEPLOY_PATH`、`SITE_URL` 两个非敏感变量。部署密钥不能登录 root，也没有 sudo 权限。
