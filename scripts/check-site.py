@@ -17,6 +17,7 @@ from site_layout import (
 CONTRACT_VERSION = 1
 IMAGE_FIELDS = {"id", "src", "album", "caption", "alt"}
 SUPPORTED_EXTENSIONS = {".gif", ".jpeg", ".jpg", ".png"}
+IGNORED_SOURCE_DIRECTORIES = {"dist", "node_modules"}
 
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
 IMAGE_ROOT = REPOSITORY_ROOT / "image"
@@ -295,7 +296,14 @@ def relative_name(path):
 
 
 def check_internal_references(errors):
-    html_paths = sorted(REPOSITORY_ROOT.rglob("*.html"))
+    html_paths = sorted(
+        path
+        for path in REPOSITORY_ROOT.rglob("*.html")
+        if not any(
+            part in IGNORED_SOURCE_DIRECTORIES
+            for part in path.relative_to(REPOSITORY_ROOT).parts
+        )
+    )
     reference_count = 0
 
     for html_path in html_paths:

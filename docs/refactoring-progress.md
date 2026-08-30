@@ -43,11 +43,12 @@ Codex 在本仓库中担任前端重构教练和实施者：先用 Spring 类比
 21. 完成 CSS 架构模块：以 `style.css` 为稳定入口，将基础、布局、公共组件、页面组件和响应式规则拆分，并把模块顺序接入自动检查。
 22. 完成图片索引 JavaScript 架构模块：以原生 ES Modules 分离数据加载与契约校验、列表渲染和预览状态机，并加入 Node 标准库行为检查。
 23. 完成全站通用 JavaScript 模块：将 Logo 动画封装为原生 ES Module，以按钮语义支持鼠标和键盘触发，处理元素缺失与减少动态效果，并保留原始动画节奏。
+24. 完成 Vite 工具链过渡模块：以五个 HTML 为多页面入口，建立开发、构建、产物检查和单一 `dist/` 发布契约；暂不引入 Vue，并保持页面文案、资源路径语义和双部署结果。
 
 ## 当前技术决策
 
-静态阶段继续使用只依赖标准库的 Python 生成器。图片数据遵循 `docs/image-index-contract.md`，公共页面壳遵循 `docs/shared-layout.md`。CSS 以 `css/style.css` 为唯一入口，按 `docs/css-architecture.md` 的职责顺序加载。图片索引脚本使用浏览器原生 ES Modules，边界遵循 `docs/image-index-javascript.md`；全站 Logo 动画遵循 `docs/shared-javascript.md`。浏览器端 JavaScript 不能枚举静态服务器的图片目录；进入 Vue/Vite 后，再评估 Node 脚本或 `import.meta.glob`。质量门禁与部署目标解耦。阿里云使用 `/var/www/tjcu8/releases/<release-id>` 与 `current` 软链接原子发布，细节见 `docs/deployment.md`。
+Python 生成器继续负责共享页面壳和图片 JSON，Vite 只负责开发服务器与生产构建。图片数据遵循 `docs/image-index-contract.md`，公共页面壳遵循 `docs/shared-layout.md`，CSS、图片索引脚本和 Logo 动画分别遵循现有架构文档。五个 HTML 是 Vite 多页面入口，工具链边界见 `docs/vite-toolchain.md`；`dist/` 是唯一部署制品，GitHub Pages 与阿里云必须消费同一次 CI 构建。浏览器端 JavaScript 仍不枚举图片目录，是否改用 `import.meta.glob` 留到图片索引 Vue 组件化阶段。阿里云继续使用原子发布结构，细节见 `docs/deployment.md`。
 
 ## 下一步
 
-进入前端工具链过渡模块：引入 Vite 作为开发与构建入口但暂不改写为 Vue，先保证五个页面、静态资源路径、GitHub Pages 和阿里云部署保持一致；工具链稳定后再进入 Vue 组件化。
+进入第一个 Vue 组件化模块：引入 Vue 3 与官方 Vite 插件，将五个页面共同的页头、主导航和页脚整理为公共组件；保留五个页面入口、现有文案和静态资源契约，不改图片索引业务。

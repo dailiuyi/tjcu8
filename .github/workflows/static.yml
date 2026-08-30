@@ -28,6 +28,9 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Install frontend dependencies
+        run: npm ci
+
       - name: Verify generated site files
         run: |
           python scripts/generate-shared-layout.py
@@ -45,6 +48,19 @@ jobs:
           done
           node scripts/check-logo-animation.mjs
           node scripts/check-image-index-js.mjs
+
+      - name: Build deployable site
+        run: |
+          npm run build
+          npm run check:dist
+
+      - name: Upload deployable site
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-site
+          path: dist
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Check repository whitespace
         run: |
@@ -73,15 +89,18 @@ jobs:
       DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
       SITE_URL: ${{ vars.SITE_URL }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - name: Download deployable site
+        uses: actions/download-artifact@v4
+        with:
+          name: built-site
+          path: dist
 
       - name: Package release
         shell: bash
         run: |
           release_id="${GITHUB_SHA::12}-${GITHUB_RUN_ATTEMPT}"
           archive="${release_id}.tar.gz"
-          tar -czf "$archive" index.html css js pages image
+          tar -czf "$archive" -C dist index.html css js pages image
           sha256sum "$archive" | awk '{print $1}' > "$archive.sha256"
           echo "RELEASE_ID=$release_id" >> "$GITHUB_ENV"
           echo "ARCHIVE=$archive" >> "$GITHUB_ENV"
@@ -125,8 +144,11 @@ jobs:
       pages: read
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - name: Download deployable site
+        uses: actions/download-artifact@v4
+        with:
+          name: built-site
+          path: dist
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -134,7 +156,7 @@ jobs:
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: "."
+          path: "dist"
 
   deploy:
     name: Deploy to GitHub Pages

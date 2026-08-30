@@ -14,7 +14,7 @@
 - 自动发布入口：`/usr/local/bin/deploy-tjcu8`
 - 受限账号：`tjcu8-deploy`，无密码、无 sudo，仅管理 `/var/www/tjcu8`
 
-发布包只应包含 `index.html`、`css/`、`js/`、`pages/` 和 `image/`。发布前运行生成器、`scripts/check-site.py` 和格式检查；上传后校验 SHA-256，再解压到新版本目录并原子切换 `current`。
+发布包只应包含 Vite `dist/` 中的 `index.html`、`css/`、`js/`、`pages/` 和 `image/`。源码目录不直接上线。发布前运行生成器、源码契约检查、`npm run build` 和 `npm run check:dist`；上传后校验 SHA-256，再解压到新版本目录并原子切换 `current`。
 
 ## 验证与回滚
 
@@ -24,6 +24,6 @@
 
 ## 自动发布
 
-`.github/workflows/static.yml` 中的 `deploy-server` 只在质量门禁通过、事件不是 Pull Request 且仓库变量 `DEPLOY_ENABLED=true` 时运行。它制作最小发布包、上传到 `incoming/`，再调用 `deploy-tjcu8` 校验 SHA-256、检查归档路径、创建 release、切换 `current` 并验证首页；验证失败会恢复上一个 release。
+`.github/workflows/static.yml` 的质量任务只构建一次 `dist/` 并上传为短期构建产物。GitHub Pages 和 `deploy-server` 下载同一产物，确保两个部署目标内容一致。`deploy-server` 只在质量门禁通过、事件不是 Pull Request 且仓库变量 `DEPLOY_ENABLED=true` 时运行；它打包 `dist/`、上传到 `incoming/`，再调用 `deploy-tjcu8` 校验 SHA-256、检查归档路径、创建 release、切换 `current` 并验证首页；验证失败会恢复上一个 release。
 
 GitHub `production` Environment 保存 `SERVER_HOST`、`SERVER_PORT`、`SERVER_USER`、`SERVER_SSH_KEY` 和 `SERVER_KNOWN_HOSTS`，以及 `DEPLOY_PATH`、`SITE_URL` 两个非敏感变量。部署密钥不能登录 root，也没有 sudo 权限。
