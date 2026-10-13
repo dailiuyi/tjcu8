@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" width="100%" height="auto" role="img" aria-label="Tjcu8 Refactoring Banner">
+  <title>Tjcu8 Refactoring Hero</title>
+  <style><![CDATA[
+    .bg { fill: #0b0f19; }
+    .grid { stroke: #1e293b; stroke-width: 1; stroke-dasharray: 4,4; }
+    .panel { fill: #111827; stroke: #1e293b; stroke-width: 1.5; }
+    .badge { fill: #1e293b; stroke: #334155; stroke-width: 1; }
+    .txt-tag { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; font-weight: 600; fill: #38bdf8; letter-spacing: 0.12em; text-transform: uppercase; }
+    .txt-title { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 38px; font-weight: 800; fill: #f8fafc; letter-spacing: -0.02em; }
+    .txt-desc { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 16px; line-height: 1.6; fill: #94a3b8; }
+    .txt-sub { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; fill: #cbd5e1; }
+    .telemetry-txt { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; fill: #64748b; }
+    .telemetry-val { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; font-weight: 600; fill: #34d399; }
+    .code-txt { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; fill: #cbd5e1; }
+
+    /* Step Ladder */
+    .step-box { fill: #1e293b; stroke: #38bdf8; stroke-width: 1.2; rx: 6; }
+    .step-line { stroke: #38bdf8; stroke-width: 1.5; stroke-dasharray: 3,3; fill: none; }
+
+    @media (prefers-color-scheme: light) {
+      .bg { fill: #f8fafc; }
+      .grid { stroke: #e2e8f0; }
+      .panel { fill: #ffffff; stroke: #e2e8f0; }
+      .badge { fill: #f1f5f9; stroke: #cbd5e1; }
+      .txt-tag { fill: #0284c7; }
+      .txt-title { fill: #0f172a; }
+      .txt-desc { fill: #475569; }
+      .txt-sub { fill: #334155; }
+      .telemetry-txt { fill: #64748b; }
+      .telemetry-val { fill: #059669; }
+      .code-txt { fill: #334155; }
+      .step-box { fill: #f8fafc; stroke: #0284c7; }
+      .step-line { stroke: #0284c7; }
+    }
+  ]]></style>
+
+  <!-- Background -->
+  <rect width="1200" height="360" rx="16" class="bg" />
+
+  <!-- Grid -->
+  <g class="grid">
+    <line x1="60" y1="0" x2="60" y2="360" />
+    <line x1="320" y1="0" x2="320" y2="360" />
+    <line x1="600" y1="0" x2="600" y2="360" />
+    <line x1="880" y1="0" x2="880" y2="360" />
+    <line x1="0" y1="70" x2="1200" y2="70" />
+    <line x1="0" y1="180" x2="1200" y2="180" />
+    <line x1="0" y1="290" x2="1200" y2="290" />
+  </g>
+
+  <!-- Left: Content -->
+  <g transform="translate(60, 42)">
+    <rect x="0" y="0" width="280" height="26" rx="13" class="badge" />
+    <circle cx="12" cy="13" r="4" fill="#38bdf8" />
+    <text x="24" y="17" class="txt-tag">PROGRESSIVE REFACTORING // VUE 3</text>
+
+    <text x="0" y="70" class="txt-title">tjcu8</text>
+    <text x="0" y="106" class="txt-desc">五页经典站点的阶梯式现代化前端重构工程实践。</text>
+    <text x="0" y="132" class="txt-desc">纯 HTML ➔ CSS 分层 ➔ JS 模块化 ➔ Vite 构建 ➔ Vue 3 共享页壳与原子部署。</text>
+
+    <!-- Pillars -->
+    <g transform="translate(0, 168)">
+      <g transform="translate(0, 0)">
+        <rect width="235" height="40" rx="8" class="panel" />
+        <circle cx="18" cy="20" r="4" fill="#38bdf8" />
+        <text x="32" y="25" class="txt-sub">5 页多页面体系 (MPA)</text>
+      </g>
+      <g transform="translate(247, 0)">
+        <rect width="235" height="40" rx="8" class="panel" />
+        <circle cx="18" cy="20" r="4" fill="#34d399" />
+        <text x="32" y="25" class="txt-sub">Vue 3 共享页眉页脚壳组件</text>
+      </g>
+      <g transform="translate(0, 48)">
+        <rect width="235" height="40" rx="8" class="panel" />
+        <circle cx="18" cy="20" r="4" fill="#fb7185" />
+        <text x="32" y="25" class="txt-sub">Vite 构建与类型安全检查</text>
+      </g>
+      <g transform="translate(247, 48)">
+        <rect width="235" height="40" rx="8" class="panel" />
+        <circle cx="18" cy="20" r="4" fill="#a78bfa" />
+        <text x="32" y="25" class="txt-sub">Nginx 软链原子发布流水线</text>
+      </g>
+    </g>
+
+    <g transform="translate(0, 286)">
+      <text x="0" y="0" class="telemetry-txt">DEPLOYED AT TJCU8.ELMA-GOHAN.XYZ &amp; GITHUB PAGES · CI QUALITY GATES</text>
+    </g>
+  </g>
+
+  <!-- Right: Refactoring Ladder Visual -->
+  <g transform="translate(680, 40)">
+    <rect width="460" height="280" rx="14" class="panel" />
+
+    <!-- Header -->
+    <line x1="0" y1="36" x2="460" y2="36" stroke="#1e293b" class="grid" />
+    <circle cx="20" cy="18" r="4" fill="#38bdf8" />
+    <text x="32" y="22" class="telemetry-txt">REFACTORING_LADDER // STAGES</text>
+    <rect x="375" y="10" width="65" height="18" rx="4" class="badge" />
+    <text x="388" y="22" class="telemetry-val">VERIFIED</text>
+
+    <!-- 4 Progressive Steps -->
+    <g transform="translate(24, 52)">
+      <!-- Stage 1 -->
+      <rect width="412" height="38" rx="6" class="panel" />
+      <text x="14" y="23" class="code-txt">01. 语义骨架统一：header ➔ main ➔ footer</text>
+
+      <!-- Stage 2 -->
+      <rect y="44" width="412" height="38" rx="6" class="panel" />
+      <text x="14" y="67" class="code-txt">02. 关注点分离：内联清理、外部 CSS/JS 契约</text>
+
+      <!-- Stage 3 -->
+      <rect y="88" width="412" height="38" rx="6" class="panel" />
+      <text x="14" y="111" class="code-txt">03. 现代工具链：Vite 多页 MPA 打包构建</text>
+
+      <!-- Stage 4 -->
+      <rect y="132" width="412" height="38" rx="6" class="step-box" />
+      <text x="14" y="155" class="code-txt" fill="#38bdf8" font-weight="700">04. 共享页壳：Vue 3 挂载 + Nginx 原子部署</text>
+    </g>
+
+    <!-- Bottom Readout -->
+    <g transform="translate(24, 232)">
+      <rect width="412" height="34" rx="6" class="badge" />
+      <text x="14" y="21" class="telemetry-txt">DEPLOYMENT TARGET:</text>
+      <text x="156" y="21" class="telemetry-val">tjcu8.elma-gohan.xyz (HTTPS)</text>
+    </g>
+  </g>
+</svg>
